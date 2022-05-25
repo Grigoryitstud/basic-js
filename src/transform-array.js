@@ -13,47 +13,33 @@ const { NotImplementedError } = require('../extensions/index.js');
  * transform([1, 2, 3, '--discard-prev', 4, 5]) => [1, 2, 4, 5]
  * 
  */
+
 function transform(arr) {
-  if(Array.isArray(arr) == false){
+  if (!Array.isArray(arr)) {
     throw new Error("'arr' parameter must be an instance of the Array!");
   }
-  if(arr.length == 0) {
-    return [];
-  } 
-  for(let i = 0; i < arr.length; i++) {
-    if(typeof(arr[i]) == 'string') {
-      if(arr[i] == '--discard-next'){
-        if(arr[i + 1] !== undefined) {
-          arr.splice(i, 2);
-        } else {
-          arr.splice(i, 1);
-        }
+  let res = [];
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i] === '--discard-next') {
+      res[res.length] = "by";
+      i++;
+    } else if (arr[i] === '--discard-prev') {
+      if (arr[i-1]) {
+        res = res.slice(0, res.length-1);
       }
-      if(arr[i] == '--discard-prev'){
-        if(arr[i - 1] !== undefined) {
-          arr.splice(i-1, 2);
-        } else {
-          arr.splice(i, 1);
-        }
+    } else if (arr[i] === '--double-next') {
+      if (arr[i+1]) {
+        res.push(arr[i+1]);
       }
-      if(arr[i] == '--double-next'){
-        if(arr[i + 1] !== undefined) {
-          arr.splice(i, 1, arr[i + 1]);
-        } else {
-          arr.splice(i, 1);
-        }
+    } else if (arr[i] === '--double-prev') {
+      if (arr[i-1]) {
+        res.push(res[res.length-1]);
       }
-      if(arr[i] == '--double-prev'){
-        if(arr[i - 1] !== undefined) {
-          arr.splice(i, 1, arr[i - 1]);
-        } else {
-          arr.splice(i, 1);
-          }      
-      }
-    return arr
+    } else {
+      res.push(arr[i]);
     }
   }
-  // let func = arr.map(a => a == '--discard-next' ? )
+  return res.filter( elem => elem !== "by");
 }
 
 module.exports = {
